@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import static com.ducheng.easy.ms.autoconfig.MeiliSearchProperties.PROPERTIES_PREFIX;
 
 /**
- * meilisearch 的自动配置类
+ *meilisearch的属性配置类
  */
 @Configuration
 @ConfigurationProperties(prefix = PROPERTIES_PREFIX)
