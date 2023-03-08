@@ -3,18 +3,14 @@ package com.ducheng.easy.ms.autoconfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import static com.ducheng.easy.ms.autoconfig.MeiliSearchProperties.PROPERTIES_PREFIX;
-
 /**
  *meilisearch的属性配置类
  */
 @Configuration
-@ConfigurationProperties(prefix = PROPERTIES_PREFIX)
+@ConfigurationProperties(prefix = "easy-ms")
 public class MeiliSearchProperties {
 
-    public static  final String PROPERTIES_PREFIX = "easy-ms";
-
-    private static   String  default_host = "http://localhost:7700";
+    private static   String  default_host = "http://81.70.16.9:7700";
 
     //meilisearch 的url地址
     private String host =  default_host;
@@ -23,7 +19,7 @@ public class MeiliSearchProperties {
     private String apiKey = "";
 
     public String getHost() {
-        return host;
+        return host ;
     }
 
     public void setHost(String host) {

@@ -5,15 +5,14 @@ import com.meilisearch.sdk.*;
 import com.ducheng.easy.ms.json.JsonHandler;
 import com.ducheng.easy.ms.json.SearchResult;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-
 import javax.annotation.Resource;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 
 public class MeiliSearchRepository<T> implements InitializingBean, DocumentOperations<T> {
 
@@ -87,7 +86,7 @@ public class MeiliSearchRepository<T> implements InitializingBean, DocumentOpera
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return getUpdateId(updates);
+        return getTaskUid(updates);
     }
 
     @Override
@@ -98,7 +97,7 @@ public class MeiliSearchRepository<T> implements InitializingBean, DocumentOpera
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return getUpdateId(updates);
+        return getTaskUid(updates);
     }
 
 
@@ -110,7 +109,7 @@ public class MeiliSearchRepository<T> implements InitializingBean, DocumentOpera
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return getUpdateId(s);
+        return getTaskUid(s);
     }
 
     @Override
@@ -121,7 +120,7 @@ public class MeiliSearchRepository<T> implements InitializingBean, DocumentOpera
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return getUpdateId(s);
+        return getTaskUid(s);
     }
 
     @Override
@@ -132,7 +131,7 @@ public class MeiliSearchRepository<T> implements InitializingBean, DocumentOpera
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return getUpdateId(s);
+        return getTaskUid(s);
     }
 
 
@@ -212,9 +211,9 @@ public class MeiliSearchRepository<T> implements InitializingBean, DocumentOpera
         }
     }
 
-    private long getUpdateId(String s) {
+    private long getTaskUid(String s) {
         Map map = jsonHandler.decode(s, Map.class);
-        return ((Double) map.get("updateId")).longValue();
+        return ((Double) map.get("taskUid")).longValue();
     }
 
 
@@ -244,6 +243,10 @@ public class MeiliSearchRepository<T> implements InitializingBean, DocumentOpera
             primaryKey = "id";
         }
         //如果不指定索引， 默认就使用表名称
-        this.index = client.getOrCreateIndex(uid, primaryKey);
+        Index index = client.getIndex(uid);
+        if (ObjectUtils.isEmpty(index)) {
+            index = client.createIndex(uid, primaryKey);
+        }
+        this.index = index;
     }
 }

@@ -14,7 +14,7 @@ import javax.annotation.Resource;
  *  meilisearch的自动注入配置类
  */
 @Configuration
-@EnableConfigurationProperties(MeiliSearchProperties.class)
+@EnableConfigurationProperties
 public class MeiliSearchAutoConfiguration {
 
     @Resource
