@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.ducheng.easy.ms.autoconfig.MeiliSearchAutoConfiguration,\
+com.ducheng.easy.ms.autoconfig.MeiliSearchProperties

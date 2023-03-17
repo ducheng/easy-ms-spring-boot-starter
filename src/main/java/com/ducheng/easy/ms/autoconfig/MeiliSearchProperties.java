@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "easy-ms")
 public class MeiliSearchProperties {
 
-    private static   String  default_host = "http://81.70.16.9:7700";
+    private static   String  default_host = "http://127.0.0.1:7700";
 
     //meilisearch 的url地址
     private String host =  default_host;
