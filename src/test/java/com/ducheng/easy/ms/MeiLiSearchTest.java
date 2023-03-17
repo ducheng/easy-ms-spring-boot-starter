@@ -15,8 +15,8 @@ public class MeiLiSearchTest {
     @Test
     public void addEntity() {
         BookEntity bookEntity = new BookEntity();
-        bookEntity.setBookName("语文");
-        bookEntity.setId("1");
+        bookEntity.setBookName("数学");
+        bookEntity.setId("2");
         long result = bookEntityRepository.add(bookEntity);
         System.out.println("添加书籍返回结果:" + result);
     }
@@ -36,7 +36,7 @@ public class MeiLiSearchTest {
 
     @Test
     public void get() {
-        BookEntity bookEntity = bookEntityRepository.get("8");
+        BookEntity bookEntity = bookEntityRepository.get("2");
         System.out.println("返回的数据是:" + bookEntity.toString());
     }
 }

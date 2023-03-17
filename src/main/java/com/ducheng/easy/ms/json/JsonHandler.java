@@ -24,7 +24,7 @@ public class JsonHandler {
     public <T> List<T> listDecode(Object o, Class<T> clazz) {
         Object list = null;
         try {
-            list = jsonHandler.decode(o, List.class, clazz);
+            list = jsonHandler.decode(getReturnDataToString(o), List.class, clazz);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -49,4 +49,21 @@ public class JsonHandler {
         }
         return t;
     }
+
+
+    /**
+     * 这里还需要转换一下
+     * @param o
+     * @return
+     */
+   public String getReturnDataToString(Object o) {
+        String resultData = null;
+        try {
+            ReturnDataEntity returnDataEntity = jsonHandler.decode(o,ReturnDataEntity.class);
+            resultData =  encode(returnDataEntity.getResults());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return  resultData;
+   }
 }
