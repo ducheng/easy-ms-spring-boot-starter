@@ -16,6 +16,14 @@ import java.util.Collections;
 import java.util.List;
 public class MeiliSearchRepository<T> implements InitializingBean, DocumentOperations<T> {
 
+    public Index getIndex() {
+        return index;
+    }
+
+    public void setIndex(Index index) {
+        this.index = index;
+    }
+
     /**
      *  初始化气的时候默认给索引的值
      */
@@ -126,6 +134,8 @@ public class MeiliSearchRepository<T> implements InitializingBean, DocumentOpera
         return taskInfo.getTaskUid();
     }
 
+
+
     @Override
     public long deleteAll() {
         TaskInfo taskInfo = null ;
@@ -171,4 +181,5 @@ public class MeiliSearchRepository<T> implements InitializingBean, DocumentOpera
         }
         this.index = index;
     }
+
 }
