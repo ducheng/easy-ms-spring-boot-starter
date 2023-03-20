@@ -2,8 +2,10 @@ package com.ducheng.easy.ms.service;
 
 import com.ducheng.easy.ms.anotation.CustomIndex;
 import com.meilisearch.sdk.*;
-import com.ducheng.easy.ms.json.JsonHandler;
-import com.ducheng.easy.ms.json.SearchResult;
+import com.meilisearch.sdk.json.GsonJsonHandler;
+import com.meilisearch.sdk.model.DocumentsQuery;
+import com.meilisearch.sdk.model.Results;
+import com.meilisearch.sdk.model.TaskInfo;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -12,8 +14,6 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-
 public class MeiliSearchRepository<T> implements InitializingBean, DocumentOperations<T> {
 
     /**
@@ -21,7 +21,8 @@ public class MeiliSearchRepository<T> implements InitializingBean, DocumentOpera
      */
     private Index index;
     private Class<T> tClass;
-    private JsonHandler jsonHandler = new JsonHandler();
+
+    private static   GsonJsonHandler jsonHandler = new GsonJsonHandler();
 
     @Resource
     private Client client;
@@ -29,35 +30,37 @@ public class MeiliSearchRepository<T> implements InitializingBean, DocumentOpera
 
     @Override
     public T get(String identifier) {
-        String document;
+        T t = null;
         try {
-            document = index.getDocument(identifier);
+            t = index.getDocument(identifier,tClass);
         } catch (Exception e) {
-            throw new RuntimeException(e);
         }
-        return jsonHandler.decode(document, tClass);
+        return t;
     }
 
     @Override
     public List<T> list() {
-        String documents;
+        Results<T> t = new Results<>();
         try {
-            documents = index.getDocuments();
+            t = index.getDocuments(tClass);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return jsonHandler.listDecode(documents, tClass);
+        return Arrays.asList(t.getResults());
     }
 
     @Override
     public List<T> list(int limit) {
-        String documents;
+        Results<T> t = null;
         try {
-            documents = index.getDocuments(limit);
+            DocumentsQuery documentsQuery = new DocumentsQuery();
+            documentsQuery.setOffset(0);
+            documentsQuery.setLimit(limit);
+            t = index.getDocuments(documentsQuery,tClass);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return jsonHandler.listDecode(documents, tClass);
+        return Arrays.asList(t.getResults());
     }
 
     @Override
@@ -79,151 +82,64 @@ public class MeiliSearchRepository<T> implements InitializingBean, DocumentOpera
     }
 
     @Override
-    public long add(List documents) {
-        String updates ;
+    public long add(List<T> documents) {
+        TaskInfo taskInfo = null ;
         try {
-            updates = index.addDocuments(jsonHandler.encode(documents));
+            taskInfo = index.addDocuments(jsonHandler.encode(documents));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return getTaskUid(updates);
+        return taskInfo.getTaskUid();
     }
 
     @Override
     public long update(List<T> documents) {
-        String updates ;
+        TaskInfo taskInfo = null ;
         try {
-            updates = index.updateDocuments(jsonHandler.encode(documents));
+            taskInfo = index.updateDocuments(jsonHandler.encode(documents));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return getTaskUid(updates);
+        return taskInfo.getTaskUid();
     }
 
 
     @Override
     public long delete(String identifier) {
-        String s;
+        TaskInfo taskInfo = null ;
         try {
-            s = index.deleteDocument(identifier);
+            taskInfo = index.deleteDocument(identifier);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return getTaskUid(s);
+        return taskInfo.getTaskUid();
     }
 
     @Override
     public long deleteBatch(String... documentsIdentifiers) {
-        String s;
+        TaskInfo taskInfo = null ;
         try {
-            s = index.deleteDocuments(Arrays.asList(documentsIdentifiers));
+            taskInfo = index.deleteDocuments(Arrays.asList(documentsIdentifiers));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return getTaskUid(s);
+        return taskInfo.getTaskUid();
     }
 
     @Override
     public long deleteAll() {
-        String s;
+        TaskInfo taskInfo = null ;
         try {
-            s = index.deleteAllDocuments();
+            taskInfo = index.deleteAllDocuments();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return getTaskUid(s);
+        return taskInfo.getTaskUid();
     }
-
-
-    @Override
-    public SearchResult<T> search(String q) {
-        String result;
-        try {
-            result = index.search(q);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return jsonHandler.resultDecode(result, tClass);
-    }
-
-    @Override
-    public SearchResult<T> search(String q, int offset, int limit) {
-        SearchRequest searchRequest = new SearchRequest();
-        searchRequest.setQ(q);
-        searchRequest.setOffset(offset);
-        searchRequest.setLimit(limit);
-        return search(searchRequest);
-    }
-
-    @Override
-    public SearchResult<T> search(SearchRequest sr) {
-        String result;
-        try {
-            result = index.search(sr);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return jsonHandler.resultDecode(result, tClass);
-    }
-
-    @Override
-    public Settings getSettings() {
-        try {
-            return index.getSettings();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public UpdateStatus updateSettings(Settings settings) {
-        try {
-            return index.updateSettings(settings);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public UpdateStatus resetSettings() {
-        try {
-            return index.resetSettings();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public UpdateStatus getUpdate(int updateId) {
-        try {
-            return index.getUpdate(updateId);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public UpdateStatus[] getUpdates() {
-        try {
-            return index.getUpdates();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private long getTaskUid(String s) {
-        Map map = jsonHandler.decode(s, Map.class);
-        return ((Double) map.get("taskUid")).longValue();
-    }
-
 
     @Override
     public void afterPropertiesSet() throws Exception {
         initIndex();
-    }
-
-    public Index getIndex() {
-        return index;
     }
 
     /**
@@ -242,10 +158,16 @@ public class MeiliSearchRepository<T> implements InitializingBean, DocumentOpera
         if (StringUtils.isEmpty(primaryKey)) {
             primaryKey = "id";
         }
-        //如果不指定索引， 默认就使用表名称
-        Index index = client.getIndex(uid);
+        Index index ;
+        try {
+            //如果不指定索引， 默认就使用表名称
+             index = client.getIndex(uid);
+        }catch (Exception e) {
+            index = null;
+        }
         if (ObjectUtils.isEmpty(index)) {
-            index = client.createIndex(uid, primaryKey);
+            TaskInfo taskInfo = client.createIndex(uid, primaryKey);
+            index=  client.getIndex(uid);
         }
         this.index = index;
     }
