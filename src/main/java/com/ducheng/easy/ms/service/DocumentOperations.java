@@ -1,17 +1,12 @@
 package com.ducheng.easy.ms.service;
 
+
 import com.meilisearch.sdk.SearchRequest;
-import com.meilisearch.sdk.Settings;
-import com.meilisearch.sdk.UpdateStatus;
-import com.ducheng.easy.ms.json.SearchResult;
-
-
 import java.util.List;
-
 
 interface DocumentOperations<T> {
 
-    T get(String identifier);
+    T get(String identifier) throws InstantiationException, IllegalAccessException;
 
     List<T> list();
 
@@ -33,19 +28,7 @@ interface DocumentOperations<T> {
 
     long deleteAll();
 
-    SearchResult<T> search(String q);
+    List<T> query(String query);
 
-    SearchResult<T> search(String q, int offset, int limit);
-
-    SearchResult<T> search(SearchRequest sr);
-
-    Settings getSettings();
-
-    UpdateStatus updateSettings(Settings settings);
-
-    UpdateStatus resetSettings();
-
-    UpdateStatus getUpdate(int updateId);
-
-    UpdateStatus[] getUpdates();
+    List<T> query(SearchRequest searchRequest);
 }
