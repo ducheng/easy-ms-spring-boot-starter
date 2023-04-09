@@ -1,10 +1,8 @@
 package com.ducheng.easy.ms;
 
-import com.ducheng.easy.ms.service.MeiliSearchRepository;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+import com.ducheng.easy.ms.anotation.MeiliSearchRepository;
 
-@Component
-public class BookEntityRepository extends MeiliSearchRepository<BookEntity> {
+
+@MeiliSearchRepository
+public class BookEntityRepository extends com.ducheng.easy.ms.service.MeiliSearchRepository<BookEntity> {
 }

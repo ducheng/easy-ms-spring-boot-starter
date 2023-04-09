@@ -1,28 +1,18 @@
 package com.ducheng.easy.ms.service;
 
 import com.ducheng.easy.ms.anotation.CustomIndex;
+import com.ducheng.easy.ms.entity.MeiliSearchResult;
 import com.meilisearch.sdk.*;
 import com.meilisearch.sdk.json.GsonJsonHandler;
-import com.meilisearch.sdk.model.DocumentsQuery;
-import com.meilisearch.sdk.model.Results;
-import com.meilisearch.sdk.model.TaskInfo;
+import com.meilisearch.sdk.model.*;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.lang.reflect.ParameterizedType;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
 public class MeiliSearchRepository<T> implements InitializingBean, DocumentOperations<T> {
-
-    public Index getIndex() {
-        return index;
-    }
-
-    public void setIndex(Index index) {
-        this.index = index;
-    }
 
     /**
      *  初始化气的时候默认给索引的值
@@ -134,6 +124,32 @@ public class MeiliSearchRepository<T> implements InitializingBean, DocumentOpera
         return taskInfo.getTaskUid();
     }
 
+
+    @Override
+    public List<T> query(String query)  {
+        MeiliSearchResult<T>  meiliSearchResult = new MeiliSearchResult<>();
+        try {
+            String rawSearch = index.rawSearch(query);
+            meiliSearchResult = jsonHandler.decode(rawSearch, MeiliSearchResult.class);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return meiliSearchResult.getHits();
+    }
+
+    @Override
+    public List<T> query(SearchRequest searchRequest) {
+        List<T> list =  new ArrayList<>();
+        try {
+            Searchable search = index.search(searchRequest);
+            ArrayList<HashMap<String, Object>> hits = search.getHits();
+            String encode = jsonHandler.encode(hits);
+            list = jsonHandler.decode(encode, List.class);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
 
     @Override

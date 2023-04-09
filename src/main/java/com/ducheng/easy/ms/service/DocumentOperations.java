@@ -1,8 +1,8 @@
 package com.ducheng.easy.ms.service;
 
 
+import com.meilisearch.sdk.SearchRequest;
 import java.util.List;
-
 
 interface DocumentOperations<T> {
 
@@ -28,4 +28,7 @@ interface DocumentOperations<T> {
 
     long deleteAll();
 
+    List<T> query(String query);
+
+    List<T> query(SearchRequest searchRequest);
 }

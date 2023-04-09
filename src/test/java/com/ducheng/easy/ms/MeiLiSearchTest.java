@@ -1,7 +1,7 @@
 package com.ducheng.easy.ms;
 
 import com.meilisearch.sdk.Client;
-import com.meilisearch.sdk.Index;
+import com.meilisearch.sdk.SearchRequest;
 import com.meilisearch.sdk.exceptions.MeilisearchException;
 import com.meilisearch.sdk.model.Key;
 import org.junit.jupiter.api.Test;
@@ -70,9 +70,16 @@ public class MeiLiSearchTest {
 
     @Test
     public void getSearchRwe() throws MeilisearchException {
-        Index index = bookEntityRepository.getIndex();
-        String rawSearch = index.rawSearch("我要");
-        System.out.println("返回的数据是:" +rawSearch);
+        List<BookEntity> entities = bookEntityRepository.query("我要");
+        System.out.println("返回的数据是:" +entities);
+    }
+
+
+    @Test
+    public void search() throws MeilisearchException {
+        SearchRequest searchRequest = new SearchRequest("我要");
+        List<BookEntity> entities = bookEntityRepository.query(searchRequest);
+        System.out.println("返回的数据是:" +entities);
     }
 
     @Test
