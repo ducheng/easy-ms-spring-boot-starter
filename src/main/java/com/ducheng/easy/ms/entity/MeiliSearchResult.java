@@ -3,10 +3,7 @@ package com.ducheng.easy.ms.entity;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- * 自定义meilisearch的返回值
- * @param <T>
- */
+
 
 public class MeiliSearchResult<T> implements Serializable {
 
